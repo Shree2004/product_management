@@ -78,12 +78,16 @@ public class CartService {
         return cart;
     }
 
-    public void removeCartItem(Long cartItemId) {
+    public void removeCartItem(Long userId, Long cartItemId) {
 
         CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
 
         if (cartItem == null) {
             throw new RuntimeException("Cart item not found");
+        }
+
+        if (!cartItem.getCart().getUser().getId().equals(userId)) {
+            throw new RuntimeException("You cannot remove another user's cart item");
         }
 
         cartItemRepository.delete(cartItem);

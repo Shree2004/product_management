@@ -52,6 +52,17 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User getUserByEmail(String email) {
+
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        return user;
+    }
+
     public String login(LoginRequest loginRequest){
         User user = userRepository.findByEmail(loginRequest.getEmail()).orElse(null);;
 
