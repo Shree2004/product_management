@@ -77,4 +77,19 @@ public class UserService {
 
         return "Login successful";
     }
+
+    public void deleteUser(Long userId) {
+
+        User user = userRepository.findById(userId).orElse(null);
+
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        if (user.getRole().getName().name().equals("SUPER_ADMIN")) {
+            throw new RuntimeException("Cannot delete SUPER_ADMIN");
+        }
+
+        userRepository.delete(user);
+    }
 }

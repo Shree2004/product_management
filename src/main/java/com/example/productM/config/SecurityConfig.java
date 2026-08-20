@@ -27,10 +27,19 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/users/**", "/auth/**")
+                        .requestMatchers("/auth/**")
+                        .permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/users")
                         .permitAll()
 
                         .requestMatchers("/roles/**")
+                        .hasRole("SUPER_ADMIN")
+
+                        .requestMatchers(HttpMethod.GET, "/users/**")
+                        .hasRole("SUPER_ADMIN")
+
+                        .requestMatchers(HttpMethod.DELETE, "/users/**")
                         .hasRole("SUPER_ADMIN")
 
                         .requestMatchers("/categories/**")
