@@ -18,4 +18,5 @@ public class UserController {
     public User createUser(@Valid @RequestBody UserRequest userRequest) {
         return userService.createUser(userRequest);
     }
+
 }
