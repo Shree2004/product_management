@@ -20,9 +20,9 @@ public class AddressService {
     private UserRepository userRepository;
 
 
-    public Address addAddress(AddressRequest addressRequest) {
+    public Address addAddress(Long userId, AddressRequest addressRequest) {
 
-        User user = userRepository.findById(addressRequest.getUserId()).orElse(null);
+        User user = userRepository.findById(userId).orElse(null);
 
         if (user == null) {
             throw new RuntimeException("User not found");
@@ -48,14 +48,16 @@ public class AddressService {
     }
 
 
-    public void deleteAddress(Long id) {
+    public void deleteAddress(Long userId, Long addressId) {
 
-        Address address = addressRepository.findById(id).orElse(null);
+        Address address = addressRepository.findById(addressId).orElse(null);
 
         if (address == null) {
             throw new RuntimeException("Address not found");
         }
-
+        if (!address.getUser().getId().equals(userId)) {
+            throw new RuntimeException("You cannot delete another user's address");
+        }
         addressRepository.delete(address);
     }
 }

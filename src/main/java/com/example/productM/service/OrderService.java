@@ -35,21 +35,27 @@ public class OrderService {
     private InventoryRepository inventoryRepository;
 
 
-    public OrderEntity placeOrder(OrderRequest orderRequest) {
+    public OrderEntity placeOrder(Long userId, OrderRequest orderRequest) {
 
-        User user = userRepository.findById(orderRequest.getUserId()).orElse(null);
+        User user = userRepository.findById(userId).orElse(null);
 
         if (user == null) {
             throw new RuntimeException("User not found");
         }
 
-        Address address = addressRepository.findById(orderRequest.getAddressId()).orElse(null);
+        Address address = addressRepository
+                .findById(orderRequest.getAddressId())
+                .orElse(null);
 
         if (address == null) {
             throw new RuntimeException("Address not found");
         }
 
-        Cart cart = cartRepository.findByUserId(user.getId()).orElse(null);
+        if (!address.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("This address does not belong to the user");
+        }
+
+        Cart cart = cartRepository.findByUserId(userId).orElse(null);
 
         if (cart == null) {
             throw new RuntimeException("Cart not found");
@@ -63,7 +69,9 @@ public class OrderService {
 
         for (CartItem cartItem : cart.getCartItems()) {
 
-            Inventory inventory = inventoryRepository.findByProductId(cartItem.getProduct().getId()).orElse(null);
+            Inventory inventory = inventoryRepository
+                    .findByProductId(cartItem.getProduct().getId())
+                    .orElse(null);
 
             if (inventory == null) {
                 throw new RuntimeException("Inventory not found");
@@ -74,12 +82,13 @@ public class OrderService {
             }
 
             BigDecimal price = cartItem.getProduct().getPrice();
+
             int quantity = cartItem.getQuantity();
+
             BigDecimal itemTotal = price.multiply(BigDecimal.valueOf(quantity));
 
             totalAmount = totalAmount.add(itemTotal);
         }
-
 
         OrderEntity order = new OrderEntity();
 
@@ -103,14 +112,18 @@ public class OrderService {
 
             orderItemRepository.save(orderItem);
 
-            Inventory inventory = inventoryRepository.findByProductId(cartItem.getProduct().getId()).orElse(null);
 
-            if (inventory != null) {
-                inventory.setQuantity(inventory.getQuantity() - cartItem.getQuantity());
-            }
+            Inventory inventory = inventoryRepository
+                    .findByProductId(cartItem.getProduct().getId())
+                    .orElse(null);
+
+            inventory.setQuantity(
+                    inventory.getQuantity() - cartItem.getQuantity()
+            );
 
             inventoryRepository.save(inventory);
         }
+
 
         cartItemRepository.deleteAll(cart.getCartItems());
 

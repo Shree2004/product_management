@@ -29,6 +29,4 @@ public class AddressRequest {
     @NotNull(message = "Address type is required")
     private AddressType addressType;
 
-    @NotNull(message = "User ID is required")
-    private Long userId;
 }
