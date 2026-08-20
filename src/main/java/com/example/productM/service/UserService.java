@@ -9,6 +9,7 @@ import com.example.productM.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.example.productM.dto.LoginRequest;
 
 @Service
 public class UserService {
@@ -49,5 +50,20 @@ public class UserService {
         user.setRole(role);
 
         return userRepository.save(user);
+    }
+
+    public String login(LoginRequest loginRequest){
+        User user = userRepository.findByEmail(loginRequest.getEmail()).orElse(null);;
+
+        if(user == null){
+           throw new RuntimeException("User not found");
+        }
+        boolean passwordMatches = passwordEncoder.matches(loginRequest.getPassword(), user.getPassword());
+
+        if(!passwordMatches){
+            throw new RuntimeException("Password Incorrect");
+        }
+
+        return "Login successful";
     }
 }
