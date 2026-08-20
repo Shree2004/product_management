@@ -124,8 +124,7 @@ public class OrderService {
             inventoryRepository.save(inventory);
         }
 
-
-        cartItemRepository.deleteAll(cart.getCartItems());
+        cartItemRepository.deleteByCartId(cart.getId());
 
         return order;
     }
