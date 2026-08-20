@@ -1,5 +1,6 @@
 package com.example.productM.entity;
 
+import com.example.productM.enums.AddressType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,6 +30,10 @@ public class Address {
 
     @Column(nullable = false)
     private String country;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AddressType addressType;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
