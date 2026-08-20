@@ -4,6 +4,7 @@ import com.example.productM.dto.OrderRequest;
 import com.example.productM.entity.*;
 import com.example.productM.enums.OrderStatus;
 import com.example.productM.repository.*;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,7 @@ public class OrderService {
     private InventoryRepository inventoryRepository;
 
 
+    @Transactional
     public OrderEntity placeOrder(Long userId, OrderRequest orderRequest) {
 
         User user = userRepository.findById(userId).orElse(null);
@@ -124,7 +126,8 @@ public class OrderService {
             inventoryRepository.save(inventory);
         }
 
-        cartItemRepository.deleteByCartId(cart.getId());
+        cartItemRepository.deleteAll(cart.getCartItems());
+        cart.getCartItems().clear();
 
         return order;
     }
