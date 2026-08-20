@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
@@ -25,5 +26,11 @@ public class OrderController {
     public OrderEntity placeOrder(Principal principal, @Valid @RequestBody OrderRequest orderRequest) {
         User user = userService.getUserByEmail(principal.getName());
         return orderService.placeOrder(user.getId(), orderRequest);
+    }
+
+    @GetMapping
+    public List<OrderEntity> getOrders(Principal principal) {
+        User user = userService.getUserByEmail(principal.getName());
+        return orderService.getOrdersByUserId(user.getId());
     }
 }
